@@ -111,8 +111,17 @@ Based on PLAN.md - Status as of current implementation
 - [ ] `extension/options/hooks/useDataLoading.ts` - Data loading hook
 - [ ] `extension/icons/icon-*.png` - Extension icons (16, 32, 48, 128px)
 
-### Server Layer - Services (ALL MISSING)
-- [ ] `server/src/services/salesforce.service.ts` - Salesforce API integration
+### Server Layer - Services 
+- [x] `server/src/services/salesforce.service.ts` - Salesforce API integration ✅ COMPLETE
+  - OAuth and credential-based authentication
+  - Connection management (connect, disconnect, test)
+  - Org info retrieval
+  - SObject listing and metadata
+  - Field metadata discovery with permissions
+  - SOQL query execution with pagination
+  - CRUD operations (create, read, update, delete, upsert)
+  - Field-level permission checking
+  - User profile and permissions
 - [ ] `server/src/services/extraction.service.ts` - Data extraction logic
 - [ ] `server/src/services/validation.service.ts` - Permission validation
 - [ ] `server/src/services/loading.service.ts` - Data loading to target orgs
@@ -170,14 +179,15 @@ Based on PLAN.md - Status as of current implementation
 | **Extension Background Script** | ⚠️ Partial | 40% |
 | **Extension Hooks** | ❌ Missing | 0% |
 | **Server Routes (Scaffolding)** | ✅ Complete | 100% |
-| **Server Services** | ❌ Missing | 0% |
+| **Server Services - Salesforce** | ✅ Complete | 100% |
+| **Server Services - Other** | ❌ Missing | 0% |
 | **Server Middleware** | ⚠️ Partial | 50% |
 | **Python Bridge** | ❌ Missing | 0% |
 | **Documentation** | ❌ Missing | 0% |
 | **Tests** | ❌ Missing | 0% |
 | **Icons & Assets** | ❌ Missing | 0% |
 
-**Overall Project Completion: ~35%**
+**Overall Project Completion: ~45%** (up from ~35%)
 
 ---
 
