@@ -40,6 +40,8 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@salesforce/core": "^8.32.6",
+    "@salesforce/ts-types": "^2.0.12",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "cors": "^2.8.6",

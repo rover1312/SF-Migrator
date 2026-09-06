@@ -1,4 +1,4 @@
-type LogLevel = 'info' | 'warn' | 'error';
+type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 
 class Logger {
   private log(level: LogLevel, message: string, ...args: any[]) {
@@ -16,6 +16,10 @@ class Logger {
 
   error(message: string, ...args: any[]) {
     this.log('error', message, ...args);
+  }
+
+  debug(message: string, ...args: any[]) {
+    this.log('debug', message, ...args);
   }
 }
 

@@ -15,6 +15,9 @@ class Logger {
     error(message, ...args) {
         this.log('error', message, ...args);
     }
+    debug(message, ...args) {
+        this.log('debug', message, ...args);
+    }
 }
 exports.logger = new Logger();
 exports.default = exports.logger;
