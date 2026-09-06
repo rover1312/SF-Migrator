@@ -281,6 +281,30 @@ class SalesforceService {
   }
 
   /**
+   * Query more records (pagination)
+   */
+  async queryMore<T extends Record<string, any>>(nextUrl: string, orgId: string): Promise<QueryResult<T>> {
+    const conn = this.getConnection(orgId);
+    if (!conn) {
+      throw new Error(`No connection found for org: ${orgId}`);
+    }
+
+    try {
+      const result = await conn.queryMore<T>(nextUrl);
+      
+      return {
+        records: result.records,
+        totalSize: result.totalSize,
+        done: result.done,
+        nextRecordsUrl: result.nextRecordsUrl,
+      };
+    } catch (error: any) {
+      logger.error(`QueryMore failed for org ${orgId}`, error);
+      throw new Error(`Failed to retrieve more records: ${error.message}`);
+    }
+  }
+
+  /**
    * Insert records into Salesforce
    */
   async insertRecords<T extends Record<string, any>>(
@@ -520,6 +544,7 @@ class SalesforceService {
   }
 }
 
-// Export singleton instance
+// Export singleton instance and class
 export const salesforceService = new SalesforceService();
+export { SalesforceService };
 export default salesforceService;
