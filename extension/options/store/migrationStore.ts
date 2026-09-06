@@ -31,6 +31,7 @@ export interface SalesforceObject {
 export interface OrgConfig {
   orgId: string;
   orgName: string;
+  username?: string;
   authType: 'oauth' | 'username_password' | 'passkey';
   credentials: Record<string, string>;
   isConnected: boolean;

@@ -106,7 +106,7 @@ export const api = {
   extract: {
     start: (config: any) => post('/extract/start', config),
     status: (extractionId: string) => get(`/extract/status/${extractionId}`),
-    cancel: (extractionId: string) => post(`/extract/cancel/${extractionId}`),
+    cancel: (extractionId: string) => post(`/extract/cancel/${extractionId}`, {}),
   },
 
   // Validation endpoints
@@ -120,7 +120,7 @@ export const api = {
   load: {
     start: (config: any) => post('/load/start', config),
     status: (loadId: string) => get(`/load/status/${loadId}`),
-    cancel: (loadId: string) => post(`/load/cancel/${loadId}`),
+    cancel: (loadId: string) => post(`/load/cancel/${loadId}`, {}),
   },
 
   // Config endpoints

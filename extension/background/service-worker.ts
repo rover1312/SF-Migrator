@@ -8,35 +8,8 @@ chrome.runtime.onInstalled.addListener((details) => {
   chrome.storage.local.set({ migrationCount: 0 });
 });
 
-// Handle OAuth redirect
-chrome.identity.onRedirectReceived.addListener((details) => {
-  const url = new URL(details.url);
-  const hashParams = new URLSearchParams(url.hash.substring(1));
-  
-  const accessToken = hashParams.get('access_token');
-  const refreshToken = hashParams.get('refresh_token');
-  const instanceUrl = hashParams.get('instance_url');
-  
-  if (accessToken) {
-    // Store tokens securely
-    chrome.storage.local.set({
-      salesforceAccessToken: accessToken,
-      salesforceRefreshToken: refreshToken,
-      salesforceInstanceUrl: instanceUrl,
-    });
-    
-    // Notify the options page
-    chrome.runtime.sendMessage({
-      type: 'OAUTH_SUCCESS',
-      payload: { accessToken, refreshToken, instanceUrl },
-    });
-  } else {
-    chrome.runtime.sendMessage({
-      type: 'OAUTH_ERROR',
-      payload: { error: 'Failed to obtain access token' },
-    });
-  }
-});
+// Handle OAuth redirect via launchWebAuthFlow callback
+// The redirect is handled in the handleOAuthLogin function
 
 // Handle messages from popup or options page
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -96,7 +69,26 @@ async function handleOAuthLogin(payload: { loginUrl: string; clientId: string; r
       interactive: true,
     });
     
-    return { success: true, redirectUrl };
+    // Parse the redirect URL to extract tokens
+    const url = new URL(redirectUrl ?? '');
+    const hashParams = new URLSearchParams(url.hash.substring(1));
+    
+    const accessToken = hashParams.get('access_token');
+    const refreshToken = hashParams.get('refresh_token');
+    const instanceUrl = hashParams.get('instance_url');
+    
+    if (accessToken) {
+      // Store tokens securely
+      chrome.storage.local.set({
+        salesforceAccessToken: accessToken,
+        salesforceRefreshToken: refreshToken,
+        salesforceInstanceUrl: instanceUrl,
+      });
+      
+      return { success: true, redirectUrl, accessToken, refreshToken, instanceUrl };
+    } else {
+      throw new Error('Failed to obtain access token from redirect URL');
+    }
   } catch (error) {
     throw new Error(`OAuth flow failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }

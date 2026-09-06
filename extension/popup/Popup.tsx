@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './styles.css';
 
-const Popup: React.FC = () => {
+export const Popup: React.FC = () => {
   const [migrationCount, setMigrationCount] = useState<number>(0);
 
   useEffect(() => {
@@ -40,4 +40,3 @@ const Popup: React.FC = () => {
   );
 };
 
-export default Popup;
