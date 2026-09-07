@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { useMigrationStore } from '../store/migrationStore';
+import ConfigSummaryScreen from './ConfigSummaryScreen';
 
 interface Step1ConfigModeProps {
   onComplete: () => void;
+  onGoToStep?: (step: number) => void;
 }
 
-const Step1ConfigMode: React.FC<Step1ConfigModeProps> = ({ onComplete }) => {
-  const { configMode, setConfigMode, importConfig, setError } = useMigrationStore();
+const Step1ConfigMode: React.FC<Step1ConfigModeProps> = ({ onComplete, onGoToStep }) => {
+  const { configMode, setConfigMode, importConfig, setError, migrationConfig } = useMigrationStore();
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [showSummary, setShowSummary] = useState(false);
+  const [importedConfig, setImportedConfig] = useState<any>(null);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -26,32 +30,62 @@ const Step1ConfigMode: React.FC<Step1ConfigModeProps> = ({ onComplete }) => {
     setUploadError(null);
   };
 
-  const validateAndImportConfig = async () => {
+  const validateAndPreviewConfig = async () => {
     if (!uploadedFile) return;
 
     try {
       const content = await uploadedFile.text();
       let config;
+      const fileExtension = uploadedFile.name.split('.').pop()?.toLowerCase();
 
-      if (uploadedFile.name.endsWith('.json')) {
+      if (fileExtension === 'json') {
         config = JSON.parse(content);
-      } else {
-        // For YAML, we would need a YAML parser library
-        // For now, we'll skip YAML support or implement later
-        setUploadError('YAML parsing not yet implemented. Please use JSON.');
-        return;
+      } else if (['yaml', 'yml'].includes(fileExtension || '')) {
+        // Try to use js-yaml if available, otherwise show error
+        try {
+          const yaml = await import('js-yaml');
+          config = yaml.load(content);
+        } catch {
+          setUploadError('YAML parsing requires js-yaml library. Please use JSON format or install dependencies.');
+          return;
+        }
       }
 
       // Basic schema validation
       if (!config.version || !config.sourceOrg || !config.objects) {
-        setUploadError('Invalid configuration file structure');
+        setUploadError('Invalid configuration file structure. Missing required fields: version, sourceOrg, or objects.');
         return;
       }
 
-      importConfig(config);
-      onComplete();
+      // Store the imported config for preview
+      setImportedConfig(config);
+      setShowSummary(true);
+      setUploadError(null);
     } catch (err) {
       setUploadError(`Failed to parse configuration file: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    }
+  };
+
+  const handleImportConfirm = () => {
+    if (importedConfig) {
+      importConfig(importedConfig);
+      setShowSummary(false);
+      setUploadedFile(null);
+      setImportedConfig(null);
+      onComplete();
+    }
+  };
+
+  const handleImportCancel = () => {
+    setShowSummary(false);
+    setUploadedFile(null);
+    setImportedConfig(null);
+  };
+
+  const handleEditFromSummary = (step: number) => {
+    setShowSummary(false);
+    if (onGoToStep) {
+      onGoToStep(step);
     }
   };
 
@@ -60,6 +94,18 @@ const Step1ConfigMode: React.FC<Step1ConfigModeProps> = ({ onComplete }) => {
       onComplete();
     }
   };
+
+  // Show summary screen if config is uploaded and validated
+  if (showSummary && importedConfig) {
+    return (
+      <ConfigSummaryScreen
+        config={importedConfig}
+        onConfirm={handleImportConfirm}
+        onEdit={handleEditFromSummary}
+        onCancel={handleImportCancel}
+      />
+    );
+  }
 
   return (
     <div className="step-content">
@@ -100,7 +146,7 @@ const Step1ConfigMode: React.FC<Step1ConfigModeProps> = ({ onComplete }) => {
           <strong>Upload Configuration</strong> - Import existing config
         </label>
         <p style={{ marginLeft: '24px', color: '#6b7280', fontSize: '13px', marginTop: '4px' }}>
-          Upload a previously exported JSON configuration file to pre-populate all settings.
+          Upload a previously exported JSON or YAML configuration file to pre-populate all settings.
         </p>
 
         {configMode === 'upload' && (
@@ -117,10 +163,10 @@ const Step1ConfigMode: React.FC<Step1ConfigModeProps> = ({ onComplete }) => {
                 Selected file: {uploadedFile.name}
                 <button
                   className="btn btn-primary"
-                  onClick={validateAndImportConfig}
+                  onClick={validateAndPreviewConfig}
                   style={{ marginLeft: '12px', padding: '4px 12px', fontSize: '12px' }}
                 >
-                  Import Configuration
+                  Preview Configuration
                 </button>
               </div>
             )}
@@ -135,6 +181,17 @@ const Step1ConfigMode: React.FC<Step1ConfigModeProps> = ({ onComplete }) => {
       {configMode === 'upload' && !uploadedFile && (
         <div className="alert alert-warning">
           Please select a configuration file to upload, or switch back to Simple Mode to continue with the wizard.
+        </div>
+      )}
+
+      {configMode === 'simple' && (
+        <div style={{ marginTop: '24px' }}>
+          <button
+            className="btn btn-primary"
+            onClick={handleContinue}
+          >
+            Continue to Source Org Configuration
+          </button>
         </div>
       )}
     </div>

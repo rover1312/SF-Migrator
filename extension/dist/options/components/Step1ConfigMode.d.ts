@@ -1,6 +1,7 @@
 import React from 'react';
 interface Step1ConfigModeProps {
     onComplete: () => void;
+    onGoToStep?: (step: number) => void;
 }
 declare const Step1ConfigMode: React.FC<Step1ConfigModeProps>;
 export default Step1ConfigMode;
