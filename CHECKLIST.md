@@ -1,285 +1,171 @@
-# SF-Migrator Implementation Checklist
+# Implementation Checklist - Local-First Salesforce Data Migrator
 
-Based on PLAN.md - Status as of current implementation
-
-## ✅ COMPLETED SECTIONS
-
-### 2. Architecture Overview
-- [x] 2.1 High-Level Architecture documented
-- [x] 2.2 Technology Stack defined
-- [x] 2.3 Directory Structure created (mostly complete)
-
-### 3. Detailed Feature Specifications
-
-#### ✅ Step 1: Configuration Mode Selection (Section 3.1)
-- [x] UI Component: `Step1ConfigMode.tsx` created
-- [x] Simple Mode option implemented
-- [x] Upload Config option scaffolded
-- [ ] Upload Config file validation (JSON/YAML)
-- [ ] Config schema validation
-- [ ] Pre-population of wizard steps from uploaded config
-- [ ] Config summary screen before extraction
-
-#### ✅ Step 2: Source Org Configuration (Section 3.2)
-- [x] UI Component: `Step2SourceOrg.tsx` created
-- [x] OAuth 2.0 flow initiated in background script
-- [ ] Username + Password + Security Token auth fully implemented
-- [ ] Passkey/FIDO2 support
-- [ ] Connection validation with org metadata display
-- [ ] Encrypted credential storage in Chrome Storage
-- [ ] Test connection button with org info display
-
-#### ✅ Step 3: Target Org Configuration (Section 3.3)
-- [x] UI Component: `Step3TargetOrgs.tsx` created
-- [x] Multiple target orgs UI structure
-- [ ] Add/Remove/Edit target orgs functionality complete
-- [ ] Set default target org
-- [ ] Independent validation for each org
-- [ ] Duplicate org detection
-
-#### ✅ Step 4: Object Selection (Section 3.4)
-- [x] UI Component: `Step4ObjectSelection.tsx` created
-- [ ] API endpoint `/api/objects/list` fully implemented
-- [ ] Objects fetched from Source Org
-- [ ] Search/filter functionality
-- [ ] Multi-select with drag-and-drop ordering
-- [ ] Object type filter (All/Standard/Custom)
-- [ ] Record count display
-
-#### ✅ Step 5: Field Selection with Permission Visualization (Section 3.5)
-- [x] UI Component: `Step5FieldSelection.tsx` created
-- [ ] API endpoint `/api/fields/describe` fully implemented
-- [ ] CRUD permission color coding (Green/Red indicators)
-- [ ] Separate scrollable table per object
-- [ ] Select All checkbox per table
-- [ ] Field type column
-- [ ] Field length display
-
-#### ⚠️ Step 6: Filter Configuration (Section 3.6) - PARTIAL
-- [x] UI Component: `Step6FilterConfig.tsx` created
-- [ ] Visual filter builder
-- [ ] SOQL syntax validation
-- [ ] "Download Configuration" button (JSON/YAML export)
-- [ ] "Extract Unprocessed Data" button
-- [ ] "Extract Processed Data" button
-- [ ] CSV downloads per object
-
-#### ⚠️ Step 7: Data Extraction (Section 3.7) - PARTIAL
-- [x] UI Component: `Step7Extraction.tsx` created
-- [ ] API endpoint `/api/extract` fully implemented
-- [ ] Real-time progress tracking
-- [ ] Batch processing logic
-- [ ] Error handling with retry capability
-- [ ] Resume from checkpoint functionality
-- [ ] Success/error summary display
-
-#### ✅ Step 8: Target Org Selection (Section 3.8)
-- [x] UI Component: `Step8TargetSelection.tsx` created
-- [ ] Checkbox selection for multiple targets
-- [ ] Validation that at least one org selected
-- [ ] Display org connection status
-
-#### ⚠️ Step 9: Permission Validation (Section 3.9) - PARTIAL
-- [x] UI Component: `Step9PermissionValidation.tsx` created
-- [ ] API endpoint `/api/validate` fully implemented
-- [ ] Bulk permission check across all objects/fields
-- [ ] Color-coded permission matrix
-- [ ] Warning messages for insufficient permissions
-- [ ] Option to auto-deselect fields without permissions
-- [ ] Re-validate button
-
-#### ⚠️ Step 10: Data Loading (Section 3.10) - PARTIAL
-- [x] UI Component: `Step10DataLoading.tsx` created
-- [ ] API endpoint `/api/load` fully implemented
-- [ ] Real-time progress per object per org
-- [ ] Error report CSV generation
-- [ ] Migration summary report
-- [ ] Retry option for failed records
-- [ ] Final report downloadable
+This checklist tracks the implementation of the local-first web application for Salesforce data migration. 
+**Architecture:** React + TypeScript (Frontend) | Node.js + Express (Backend) | Python (Data Processing) | Local File System (Storage)
 
 ---
 
-## ❌ MISSING COMPONENTS
+## 1. Project Setup & Configuration
+- [ ] Initialize root `package.json` with workspaces (frontend, server)
+- [ ] Configure TypeScript for both frontend and server
+- [ ] Set up ESLint and Prettier for code consistency
+- [ ] Create `.env.example` with required local environment variables
+- [ ] Configure `tsconfig.json` for root, frontend, and server
+- [ ] Set up nodemon for local development hot-reloading
+- [ ] Create build scripts for production bundling
 
-### Extension Layer
-- [x] `extension/popup/index.html` - Popup HTML entry point ✅ EXISTS
-- [x] `extension/options/index.html` - Options page HTML entry point ✅ EXISTS
-- [ ] `extension/options/hooks/useOrgAuth.ts` - Auth hook
-- [ ] `extension/options/hooks/useObjectDiscovery.ts` - Object discovery hook
-- [ ] `extension/options/hooks/useFieldMetadata.ts` - Field metadata hook
-- [ ] `extension/options/hooks/useExtraction.ts` - Extraction hook
-- [ ] `extension/options/hooks/useDataLoading.ts` - Data loading hook
-- [ ] `extension/icons/icon-*.png` - Extension icons (16, 32, 48, 128px)
+## 2. Backend Core (Node.js/Express)
+- [ ] Initialize Express server with CORS configuration for localhost
+- [ ] Implement robust error handling middleware
+- [ ] Create request logging middleware
+- [ ] Set up Multer for handling config file uploads
+- [ ] Implement local file system utilities (read/write/stream large files)
+- [ ] Create API response standardization wrapper
+- [ ] Set up process management for spawning Python scripts
 
-### Server Layer - Services 
-- [x] `server/src/services/salesforce.service.ts` - Salesforce API integration ✅ COMPLETE
-  - OAuth and credential-based authentication
-  - Connection management (connect, disconnect, test)
-  - Org info retrieval
-  - SObject listing and metadata
-  - Field metadata discovery with permissions
-  - SOQL query execution with pagination
-  - CRUD operations (create, read, update, delete, upsert)
-  - Field-level permission checking
-  - User profile and permissions
-- [x] `server/src/services/extraction.service.ts` - Data extraction logic ✅ EXISTS (implementation partial)
-- [x] `server/src/services/validation.service.ts` - Permission validation ✅ EXISTS (implementation partial)
-- [x] `server/src/services/loading.service.ts` - Data loading to target orgs ✅ EXISTS (implementation partial)
-- [x] `server/src/services/python-bridge.service.ts` - Python script integration ✅ EXISTS (stub implementation)
+## 3. Configuration Management
+- [ ] Define JSON Schema for migration configuration
+- [ ] Implement Config Validator (JSON/YAML support) using Ajv
+- [ ] Create Config Export utility (generate JSON/YAML from state)
+- [ ] Create Config Import utility (parse and validate uploaded files)
+- [ ] Implement business rule validation (e.g., source != target)
 
-### Server Layer - Middleware
-- [x] `server/src/middleware/error.middleware.ts` - Error middleware ✅ EXISTS
-- [ ] `server/src/middleware/auth.middleware.ts` - Authentication middleware
+## 4. Salesforce Services (Backend)
+- [ ] Install `jsforce` or `@salesforce/core` libraries
+- [ ] Implement OAuth 2.0 User-Agent flow for local callback server
+- [ ] Create Auth Service: Handle token storage in local secure storage
+- [ ] Create Auth Service: Token refresh logic
+- [ ] Create Metadata Service: Fetch available SObjects
+- [ ] Create Metadata Service: Fetch fields, relationships, and permissions for an SObject
+- [ ] Create Data Service: SOQL query builder and executor
+- [ ] Create Data Service: Bulk API 2.0 integration for extraction
+- [ ] Create Data Service: Bulk API 2.0 integration for loading
+- [ ] Implement rate limiting and retry logic for API calls
 
-### Server Layer - Routes (PARTIAL - scaffolding only)
-- [x] `server/src/routes/auth.routes.ts` - Created but minimal implementation ⚠️ STUB ONLY
-- [x] `server/src/routes/objects.routes.ts` - Created but minimal implementation ⚠️ STUB ONLY
-- [x] `server/src/routes/fields.routes.ts` - Created but minimal implementation ⚠️ STUB ONLY
-- [x] `server/src/routes/extract.routes.ts` - Created but minimal implementation ⚠️ STUB ONLY
-- [x] `server/src/routes/validate.routes.ts` - Created but minimal implementation ⚠️ STUB ONLY
-- [x] `server/src/routes/load.routes.ts` - Created but minimal implementation ⚠️ STUB ONLY
-- [x] `server/src/routes/config.routes.ts` - Created but minimal implementation ⚠️ STUB ONLY
-- [ ] Full API implementation with Salesforce integration
-- [ ] Error handling in all routes
-- [ ] Request/response validation
+## 5. Python Bridge Integration
+- [ ] Set up `python-bridge` or child_process communication layer
+- [ ] Create Python virtual environment setup script
+- [ ] Implement data serialization protocol (JSONL/Parquet) between Node and Python
+- [ ] Create Python script for ID Lookup Replacement logic
+- [ ] Create Python script for complex data transformation rules
+- [ ] Implement streaming interface for processing millions of records without OOM
+- [ ] Add error handling for Python process crashes
 
-### Python Bridge Layer (COMPLETELY MISSING)
-- [ ] `python-bridge/` directory does not exist
-- [ ] `python-bridge/bridge_server.py` - Python server for script execution
-- [ ] `python-bridge/requirements.txt` - Python dependencies
-- [ ] Integration with existing Python scripts:
-  - [ ] `scripts/extract.py`
-  - [ ] `scripts/cleaner.py`
-  - [ ] `scripts/id_resolver.py`
-  - [ ] `scripts/sf_api.py`
-  - [ ] `scripts/migrate.py`
+## 6. Frontend Core (React + TypeScript)
+- [ ] Initialize Vite + React + TypeScript project
+- [ ] Set up Tailwind CSS for styling
+- [ ] Create global state management (Zustand/Redux) for wizard state
+- [ ] Implement routing (React Router) for wizard steps
+- [ ] Create reusable UI components (Button, Input, Select, Card, Modal)
+- [ ] Create Layout component with sidebar/navigation
+- [ ] Implement Toast/Notification system for user feedback
+- [ ] Implement Loading/Progress bar components
 
-### Documentation (COMPLETELY MISSING)
-- [ ] `docs/` directory does not exist
-- [ ] `docs/API_SPECIFICATION.md` - Complete API documentation
-- [ ] `docs/USER_GUIDE.md` - User manual
+## 7. Wizard Step 1: Configuration Mode
+- [ ] Create `ConfigModeScreen` component
+- [ ] Implement "New Configuration" option
+- [ ] Implement "Import Configuration" option with file upload
+- [ ] Display config preview upon file upload
+- [ ] Handle parsing errors for invalid config files
 
-### Testing (COMPLETELY MISSING)
-- [ ] `server/tests/` directory does not exist
-- [ ] `server/tests/unit/` - Unit tests
-- [ ] `server/tests/integration/` - Integration tests
-- [ ] `server/tests/e2e/` - End-to-end tests
-- [ ] Extension tests (Jest + React Testing Library)
-- [ ] Playwright E2E tests
+## 8. Wizard Step 2: Source Org Authentication
+- [ ] Create `SourceAuthScreen` component
+- [ ] Implement "Login to Salesforce" button triggering backend OAuth
+- [ ] Handle OAuth callback and store session
+- [ ] Display connected org details (Instance URL, Org ID, User)
+- [ ] Implement "Logout" functionality
+- [ ] Validate required permissions (API Enabled, etc.)
 
-### Root Configuration
-- [ ] Root `tsconfig.json` - TypeScript config for monorepo (does not exist in root)
-- [ ] `.env.example` - Environment variables template (does not exist)
-- [x] `.gitignore` - Proper git ignore rules ✅ EXISTS
+## 9. Wizard Step 3: Target Org Configuration
+- [ ] Create `TargetOrgsScreen` component
+- [ ] Implement dynamic list of target orgs (Add/Remove)
+- [ ] Reuse authentication flow for multiple target orgs
+- [ ] Display list of connected target orgs with status
+- [ ] Validate that target orgs are distinct from source
 
----
+## 10. Wizard Step 4: Object Selection
+- [ ] Create `ObjectSelectionScreen` component
+- [ ] Fetch and display list of available SObjects from Source Org
+- [ ] Implement search/filter for objects
+- [ ] Allow multi-selection of objects
+- [ ] Display object metadata (Label, API Name, Record Count estimate)
+- [ ] Validate at least one object is selected
 
-## 📊 IMPLEMENTATION STATUS SUMMARY
+## 11. Wizard Step 5: Field Selection & Permissions
+- [ ] Create `FieldSelectionScreen` component
+- [ ] Fetch fields for selected objects
+- [ ] Display fields in a table with checkboxes
+- [ ] Visualize field permissions (Readable/Updateable) using color coding
+- [ ] Implement "Select All" / "Deselect All" per object
+- [ ] Warn about unmappable fields (e.g., Readonly system fields)
 
-| Component | Status | Completion % | Notes |
-|-----------|--------|--------------|-------|
-| **Extension UI Components** | ✅ Complete | 100% | All 10 step components exist |
-| **Extension State Management** | ✅ Complete | 100% | migrationStore.ts exists |
-| **Extension Background Script** | ⚠️ Partial | 40% | service-worker.ts exists but minimal |
-| **Extension HTML Entry Points** | ✅ Complete | 100% | popup/index.html and options/index.html exist |
-| **Extension Hooks** | ❌ Missing | 0% | hooks/ directory does not exist |
-| **Server Routes (Scaffolding)** | ✅ Complete | 100% | All 7 route files exist |
-| **Server Routes (Implementation)** | ❌ Stub Only | ~5% | All routes are placeholders without real logic |
-| **Server Services - Salesforce** | ✅ Complete | 100% | Full implementation with jsforce |
-| **Server Services - Other** | ⚠️ Partial | ~30% | extraction, validation, loading, python-bridge services exist but partial/stub |
-| **Server Middleware** | ⚠️ Partial | 50% | error.middleware.ts exists, auth.middleware.ts missing |
-| **Python Bridge** | ❌ Missing | 0% | python-bridge/ directory does not exist |
-| **Documentation** | ❌ Missing | 0% | docs/ directory does not exist |
-| **Tests** | ❌ Missing | 0% | server/tests/ directory does not exist |
-| **Icons & Assets** | ❌ Missing | 0% | extension/icons/ directory does not exist |
-| **Root Config Files** | ⚠️ Partial | 33% | .gitignore exists, tsconfig.json and .env.example missing |
+## 12. Wizard Step 6: Filter Configuration
+- [ ] Create `FilterConfigScreen` component
+- [ ] Provide UI for building WHERE clauses
+- [ ] Support basic operators (=, !=, >, <, IN, LIKE)
+- [ ] Allow adding multiple filter conditions
+- [ ] Preview generated SOQL query
+- [ ] Validate SOQL syntax before proceeding
 
-**Overall Project Completion: ~35-40%** (updated from ~45%)
+## 13. Wizard Step 7: Extraction Configuration & Execution
+- [ ] Create `ExtractionScreen` component
+- [ ] Configure batch size and concurrency limits
+- [ ] Select local directory for saving extracted data
+- [ ] Start extraction job via backend API
+- [ ] Display real-time progress (Records extracted, % complete, ETA)
+- [ ] Show logs/stream output from backend
+- [ ] Handle pause/resume/cancel functionality
+- [ ] Save extraction manifest/metadata locally
 
----
+## 14. Config Summary Screen (Pre-Extraction)
+- [ ] Create `ConfigSummaryScreen` component
+- [ ] Display summary of Source and Target Orgs
+- [ ] List selected Objects and Field counts
+- [ ] Show active Filters
+- [ ] Display Extraction settings
+- [ ] Require explicit user confirmation ("Start Extraction")
+- [ ] Allow editing previous steps from summary
 
-## 🔴 CRITICAL GAPS FOR PRODUCTION READINESS
+## 15. Wizard Step 8: Target Org Selection for Loading
+- [ ] Create `TargetSelectionForLoadScreen` component
+- [ ] Display list of previously authenticated target orgs
+- [ ] Allow selecting subset of target orgs for this load job
+- [ ] Confirm target readiness
 
-1. **No Salesforce Integration in Routes**: Server routes are stubs, don't use the salesforce.service.ts implementation
-2. **No Python Bridge Directory**: python-bridge/ folder completely missing, cannot execute existing Python scripts for extraction/cleaning
-3. **No Real API Implementation**: All 7 route files are placeholder stubs without business logic
-4. **No Authentication Middleware**: auth.middleware.ts missing, no request authentication
-5. **No Data Processing**: Extraction, validation, and loading services exist but are not wired to routes
-6. **Missing Custom Hooks**: extension/options/hooks/ directory doesn't exist - UI components can't perform async operations
-7. **No Tests**: Zero test coverage (no tests directory)
-8. **No Documentation**: docs/ directory missing - no API specs or user guides
-9. **Missing UI Entry Point Files**: HTML files exist but may need review; extension icons missing
-10. **Missing Config Files**: Root tsconfig.json and .env.example missing
+## 16. Wizard Step 9: Permission Validation on Target
+- [ ] Create `TargetValidationScreen` component
+- [ ] Run pre-flight checks on selected target orgs
+- [ ] Verify existence of target SObjects
+- [ ] Verify field write permissions on targets
+- [ ] Report missing fields or permission errors
+- [ ] Block loading if critical validation fails
 
----
+## 17. Wizard Step 10: Data Loading Execution
+- [ ] Create `DataLoadingScreen` component
+- [ ] Trigger Python processing service for ID replacement
+- [ ] Stream processed data to Target Orgs via Bulk API
+- [ ] Display real-time load progress per target org
+- [ ] Show success/failure counts per batch
+- [ ] Generate and display final load report
+- [ ] Save load results/logs locally
 
-## 🎯 NEXT STEPS TO REACH PRODUCTION READY
+## 18. Local Storage & File Management
+- [ ] Define standard directory structure for local data (`./data/orgs`, `./data/jobs`)
+- [ ] Implement cleanup utility for temporary files
+- [ ] Create job history tracking (JSON logs of past runs)
+- [ ] Ensure large file handling (streaming reads/writes)
 
-### Phase 1: Core Functionality (Critical)
-1. Wire up server routes to use salesforce.service.ts for real Salesforce API integration
-2. Implement OAuth authentication flow with proper token management
-3. Complete object and field discovery APIs (replace stubs in objects.routes.ts and fields.routes.ts)
-4. Build extraction service implementation (connect to Python bridge or implement directly)
-5. Implement validation service with actual permission checks
-6. Build data loading service with batch processing
+## 19. Testing & Quality Assurance
+- [ ] Write unit tests for Config Validator
+- [ ] Write unit tests for SOQL builder
+- [ ] Mock Salesforce API for integration tests
+- [ ] Test end-to-end flow with small datasets
+- [ ] Performance test with 1M+ record simulation
+- [ ] Verify memory usage during large file processing
 
-### Phase 2: UI/UX Completion
-1. Create custom hooks in extension/options/hooks/:
-   - useOrgAuth.ts
-   - useObjectDiscovery.ts
-   - useFieldMetadata.ts
-   - useExtraction.ts
-   - useDataLoading.ts
-2. Add extension icons (16, 32, 48, 128px)
-3. Add loading states and error boundaries to UI components
-4. Complete configuration export/import functionality
-5. Review and enhance HTML entry points
-
-### Phase 3: Production Hardening
-1. Create auth.middleware.ts for request authentication
-2. Comprehensive error handling in all route handlers
-3. Logging and monitoring setup
-4. Security audit (credential storage, XSS prevention)
-5. Performance optimization
-6. Accessibility compliance
-
-### Phase 4: Testing & Documentation
-1. Create python-bridge/ directory with bridge_server.py and requirements.txt
-2. Create docs/ directory with API_SPECIFICATION.md and USER_GUIDE.md
-3. Create server/tests/ directory structure
-4. Unit tests for all services
-5. Integration tests for API endpoints
-6. E2E tests with Playwright
-7. Create root tsconfig.json for monorepo
-8. Create .env.example template
-
----
-
-## CONCLUSION
-
-**Current State**: The project has a solid foundation with UI components scaffolded and basic TypeScript structure in place. However, it is **NOT production ready**.
-
-**Key Findings from Code Audit**:
-- ✅ All 10 UI step components exist (Step1ConfigMode.tsx through Step10DataLoading.tsx)
-- ✅ HTML entry points exist for popup and options pages
-- ✅ salesforce.service.ts has comprehensive implementation with jsforce
-- ✅ Service files exist for extraction, validation, loading, and python-bridge
-- ✅ All 7 route files exist but are ONLY placeholder stubs
-- ❌ No custom hooks for async operations (hooks/ directory missing)
-- ❌ No python-bridge/ directory
-- ❌ No docs/ directory
-- ❌ No server/tests/ directory
-- ❌ No extension icons
-
-**Production Ready Definition**: A production-ready implementation would require:
-- ✅ Working Salesforce API integration (service exists, routes don't use it)
-- ✅ Complete OAuth flow with secure token management
-- ✅ Functional data extraction, validation, and loading (services exist, not wired to routes)
-- ✅ Python bridge for legacy script integration (MISSING)
-- ✅ Comprehensive error handling and logging
-- ✅ Test coverage (>80%)
-- ✅ Complete documentation
-- ✅ Security hardening
-- ✅ Performance optimization
-
-**Estimated Additional Work**: 60-65% of the implementation remains to achieve production readiness. The previous estimate of 60-80% was slightly high - the core service implementations are more complete than initially assessed, but the routing layer and integration work remain substantial.
+## 20. Documentation & Deployment
+- [ ] Write `README.md` with setup instructions (Clone -> Install -> Run)
+- [ ] Document environment variables setup
+- [ ] Create troubleshooting guide for common OAuth/API issues
+- [ ] Add comments to Python scripts for maintenance
+- [ ] Prepare production build script
