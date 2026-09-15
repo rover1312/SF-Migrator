@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { writeJsonFile } from '../../src/server/utils/files.js';
+import { writeJsonFile } from '../../src/server/utils/files';
 
 describe('files', () => {
   it('writeJsonFile() creates parents and round-trips JSON', async () => {

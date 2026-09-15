@@ -1,4 +1,4 @@
-import { fail, ok } from '../../src/server/utils/api-response.js';
+import { fail, ok } from '../../src/server/utils/api-response';
 
 function mockRes() {
   const res: any = {};

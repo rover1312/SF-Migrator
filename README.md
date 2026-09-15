@@ -34,12 +34,13 @@ sf-migrator/
 │   │   ├── store/       # Zustand wizard state
 │   │   └── utils/       # API client
 │   ├── server/        # Node.js + Express API
+│   │   ├── config/        # Migration JSON Schema
 │   │   ├── routes/      # One router per resource
-│   │   ├── services/    # Salesforce, extraction, validation, loading
-│   │   ├── middleware/  # Auth + error handling
-│   │   ├── utils/       # Config, logger, file helpers
+│   │   ├── services/    # Auth, metadata, Bulk, jobs, extract/load/validate
+│   │   ├── middleware/  # Logging, uploads, error handling
+│   │   ├── utils/       # Config, logger, files, SOQL, CSV, retry
 │   │   └── types/       # Shared TypeScript types
-│   └── scripts/       # Python helpers (ID resolution, transforms)
+│   └── scripts/       # Python helpers (extract, cleaner, id_resolver)
 ├── data/
 │   ├── extracted/     # Extracted CSV/JSON (local only)
 │   ├── configs/       # Saved migration configs
@@ -54,6 +55,7 @@ sf-migrator/
 │   ├── API_SPECIFICATION.md
 │   ├── USER_GUIDE.md
 │   └── legacy/        # Old Python-only guide
+│   ├── TROUBLESHOOTING.md (in docs/ — OAuth/API pitfalls)
 ├── PLAN.md
 ├── CHECKLIST.md
 ├── .env.example
@@ -69,9 +71,22 @@ sf-migrator/
 | `npm run dev:client` | Run Vite UI only (`:3000`)         |
 | `npm run build`    | Build both server and client         |
 | `npm start`        | Run built server                     |
-| `npm test`         | Run Jest tests                       |
+| `npm test`         | Run Jest tests (unit + integration)  |
 | `npm run lint`     | Run ESLint                           |
 | `npm run format`   | Run Prettier                         |
+| `npm run typecheck` | Type-check server                   |
+| `npm run typecheck:client` | Type-check client           |
+
+## Python scripts (optional)
+
+The Node pipeline works without Python. For standalone heavy processing:
+
+```bash
+pip install -r src/scripts/requirements.txt
+python src/scripts/extract.py --help
+python src/scripts/cleaner.py --help
+python src/scripts/id_resolver.py --help
+```
 
 ## Configuration
 

@@ -1,17 +1,17 @@
 import cors from 'cors';
 import express from 'express';
-import authRoutes from './routes/auth.routes.js';
-import configRoutes from './routes/config.routes.js';
-import extractRoutes from './routes/extract.routes.js';
-import fieldsRoutes from './routes/fields.routes.js';
-import loadRoutes from './routes/load.routes.js';
-import objectsRoutes from './routes/objects.routes.js';
-import validateRoutes from './routes/validate.routes.js';
-import { errorMiddleware } from './middleware/error.middleware.js';
-import { requestLogger } from './middleware/request-logger.middleware.js';
-import { config } from './utils/config.js';
-import { ensureDataDirs } from './utils/files.js';
-import { logger } from './utils/logger.js';
+import authRoutes from './routes/auth.routes';
+import configRoutes from './routes/config.routes';
+import extractRoutes from './routes/extract.routes';
+import fieldsRoutes from './routes/fields.routes';
+import loadRoutes from './routes/load.routes';
+import objectsRoutes from './routes/objects.routes';
+import validateRoutes from './routes/validate.routes';
+import { errorMiddleware } from './middleware/error.middleware';
+import { requestLogger } from './middleware/request-logger.middleware';
+import { config } from './utils/config';
+import { ensureDataDirs } from './utils/files';
+import { logger } from './utils/logger';
 
 const app = express();
 

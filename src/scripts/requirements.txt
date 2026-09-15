@@ -1,0 +1,2 @@
+# Python helpers for heavy data processing (managed separately from npm).
+simple-salesforce>=1.12

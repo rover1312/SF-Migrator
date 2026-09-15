@@ -1,25 +1,40 @@
-import { useMigrationStore, WizardStep } from './store/migrationStore.js';
-import ConfigSummaryScreen from './components/ConfigSummaryScreen.js';
-import Step1ConfigMode from './components/Step1ConfigMode.js';
-import Step10DataLoading from './components/Step10DataLoading.js';
-import Step2SourceOrg from './components/Step2SourceOrg.js';
-import Step3TargetOrgs from './components/Step3TargetOrgs.js';
-import Step4ObjectSelection from './components/Step4ObjectSelection.js';
-import Step5FieldSelection from './components/Step5FieldSelection.js';
-import Step6FilterConfig from './components/Step6FilterConfig.js';
-import Step7Extraction from './components/Step7Extraction.js';
-import Step8TargetSelection from './components/Step8TargetSelection.js';
-import Step9PermissionValidation from './components/Step9PermissionValidation.js';
+import { useMigrationStore, WizardStep } from './store/migrationStore';
+import ConfigSummaryScreen from './components/ConfigSummaryScreen';
+import Step1ConfigMode from './components/Step1ConfigMode';
+import Step10DataLoading from './components/Step10DataLoading';
+import Step2SourceOrg from './components/Step2SourceOrg';
+import Step3TargetOrgs from './components/Step3TargetOrgs';
+import Step4ObjectSelection from './components/Step4ObjectSelection';
+import Step5FieldSelection from './components/Step5FieldSelection';
+import Step6FilterConfig from './components/Step6FilterConfig';
+import Step7Extraction from './components/Step7Extraction';
+import Step8TargetSelection from './components/Step8TargetSelection';
+import Step9PermissionValidation from './components/Step9PermissionValidation';
 
 const STEP_ORDER: WizardStep[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
+function prevStep(step: WizardStep): WizardStep {
+  if (step === 'summary') return 10;
+  return STEP_ORDER[Math.max(0, STEP_ORDER.indexOf(step) - 1)];
+}
+
+function nextStep(step: WizardStep): WizardStep {
+  if (step === 'summary') return 'summary';
+  return STEP_ORDER[Math.min(STEP_ORDER.length - 1, STEP_ORDER.indexOf(step) + 1)];
+}
+
 export default function App() {
   const { step, setStep } = useMigrationStore();
+  const onSummary = step === 'summary';
 
   return (
     <main style={{ maxWidth: 960, margin: '0 auto', padding: 24 }}>
       <h1>SF-Migrator</h1>
-      <p>Step {step} of 10 — local-first Salesforce migration.</p>
+      <p>
+        {onSummary
+          ? 'Review — local-first Salesforce migration.'
+          : `Step ${step} of 10 — local-first Salesforce migration.`}
+      </p>
 
       {step === 1 && <Step1ConfigMode />}
       {step === 2 && <Step2SourceOrg />}
@@ -34,17 +49,11 @@ export default function App() {
       {step === 'summary' && <ConfigSummaryScreen />}
 
       <nav style={{ display: 'flex', gap: 8, marginTop: 24 }}>
-        <button
-          disabled={step === 1}
-          onClick={() => setStep(STEP_ORDER[Math.max(0, STEP_ORDER.indexOf(step as WizardStep) - 1)])}
-        >
+        <button disabled={step === 1} onClick={() => setStep(prevStep(step))}>
           Back
         </button>
         <button onClick={() => setStep('summary')}>Review summary</button>
-        <button
-          disabled={step === 10}
-          onClick={() => setStep(STEP_ORDER[Math.min(9, STEP_ORDER.indexOf(step as WizardStep) + 1)])}
-        >
+        <button disabled={onSummary || step === 10} onClick={() => setStep(nextStep(step))}>
           Next
         </button>
       </nav>

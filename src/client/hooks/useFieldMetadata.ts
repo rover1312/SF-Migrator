@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { api } from '../utils/api-client.js';
+import { api } from '../utils/api-client';
 
 /** Fetch field metadata with permissions for Step 5. */
 export function useFieldMetadata() {

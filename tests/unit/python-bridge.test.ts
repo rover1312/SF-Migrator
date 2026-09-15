@@ -1,4 +1,4 @@
-import { runPythonScript } from '../../src/server/services/python-bridge.service.js';
+import { runPythonScript } from '../../src/server/services/python-bridge.service';
 
 // No Python on this machine's PATH, so exercise the bridge logic with Node
 // standing in for the child process binary.

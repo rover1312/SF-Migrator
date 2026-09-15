@@ -36,6 +36,25 @@ export interface FilterDefinition {
   value: string;
 }
 
+/** Serializable migration configuration (export/import, jobs). No secrets. */
+export interface MigrationConfig {
+  version: 1;
+  sourceOrg: { nickname: string; loginUrl: string };
+  targetOrgs: { nickname: string; loginUrl: string }[];
+  objects: { name: string; label?: string; order: number }[];
+  fields: Record<string, string[]>;
+  filters: FilterDefinition[];
+  extraction: { format: 'csv' | 'json' | 'both'; batchSize: number; includeDeleted?: boolean };
+  loading: {
+    operation: 'insert' | 'update' | 'upsert';
+    externalIdField?: string;
+    batchSize: number;
+    stopOnError: boolean;
+  };
+  /** Child object -> lookup field -> referenced parent object (parents load first). */
+  lookups?: Record<string, Record<string, string>>;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { api } from '../utils/api-client.js';
+import { api } from '../utils/api-client';
 
 /** Authenticate an org and track connection status. */
 export function useOrgAuth() {

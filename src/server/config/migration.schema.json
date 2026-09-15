@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SF-Migrator migration configuration",
+  "type": "object",
+  "required": ["version", "sourceOrg", "targetOrgs", "objects", "fields", "filters", "extraction", "loading"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "integer", "const": 1 },
+    "sourceOrg": {
+      "type": "object",
+      "required": ["nickname", "loginUrl"],
+      "additionalProperties": false,
+      "properties": {
+        "nickname": { "type": "string", "minLength": 1 },
+        "loginUrl": { "type": "string", "minLength": 1 }
+      }
+    },
+    "targetOrgs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "required": ["nickname", "loginUrl"],
+        "additionalProperties": false,
+        "properties": {
+          "nickname": { "type": "string", "minLength": 1 },
+          "loginUrl": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "objects": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "order"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "label": { "type": "string" },
+          "order": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "fields": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "items": { "type": "string", "minLength": 1 }
+      }
+    },
+    "filters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["objectName", "field", "operator", "value"],
+        "additionalProperties": false,
+        "properties": {
+          "objectName": { "type": "string", "minLength": 1 },
+          "field": { "type": "string", "minLength": 1 },
+          "operator": {
+            "type": "string",
+            "enum": ["=", "!=", ">", "<", ">=", "<=", "IN", "NOT IN", "LIKE"]
+          },
+          "value": { "type": "string" }
+        }
+      }
+    },
+    "extraction": {
+      "type": "object",
+      "required": ["format", "batchSize"],
+      "additionalProperties": false,
+      "properties": {
+        "format": { "type": "string", "enum": ["csv", "json", "both"] },
+        "batchSize": { "type": "integer", "minimum": 100, "maximum": 50000 },
+        "includeDeleted": { "type": "boolean" }
+      }
+    },
+    "loading": {
+      "type": "object",
+      "required": ["operation", "batchSize", "stopOnError"],
+      "additionalProperties": false,
+      "properties": {
+        "operation": { "type": "string", "enum": ["insert", "update", "upsert"] },
+        "externalIdField": { "type": "string" },
+        "batchSize": { "type": "integer", "minimum": 1, "maximum": 10000 },
+        "stopOnError": { "type": "boolean" }
+      }
+    },
+    "lookups": {
+      "type": "object",
+      "description": "Child object -> lookup field -> referenced parent object. Parents must load first.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

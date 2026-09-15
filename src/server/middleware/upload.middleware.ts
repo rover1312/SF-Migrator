@@ -1,6 +1,6 @@
 import multer from 'multer';
 import path from 'node:path';
-import { config } from '../utils/config.js';
+import { config } from '../utils/config';
 
 const ALLOWED_EXTENSIONS = new Set(['.json', '.yaml', '.yml', '.csv']);
 

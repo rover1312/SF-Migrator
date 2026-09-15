@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { api } from '../utils/api-client.js';
+import { api } from '../utils/api-client';
 
 /** Fetch available SObjects for Step 4. */
 export function useObjectDiscovery(orgId?: string) {

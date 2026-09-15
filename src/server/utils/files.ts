@@ -1,10 +1,16 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { config } from './config.js';
+import { config } from './config';
 
 /** Ensure local data directories exist. Call once at server startup. */
 export async function ensureDataDirs(): Promise<void> {
-  const dirs = [config.dataDir, config.extractedDir, config.configsDir, config.logsDir, config.tempDir];
+  const dirs = [
+    config.dataDir,
+    config.extractedDir,
+    config.configsDir,
+    config.logsDir,
+    config.tempDir,
+  ];
   for (const dir of dirs) {
     await fs.mkdir(dir, { recursive: true });
   }
