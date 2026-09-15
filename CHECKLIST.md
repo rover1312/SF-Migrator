@@ -6,22 +6,22 @@ This checklist tracks the implementation of the local-first web application for 
 ---
 
 ## 1. Project Setup & Configuration
-- [ ] Initialize root `package.json` with workspaces (frontend, server)
-- [ ] Configure TypeScript for both frontend and server
-- [ ] Set up ESLint and Prettier for code consistency
-- [ ] Create `.env.example` with required local environment variables
-- [ ] Configure `tsconfig.json` for root, frontend, and server
-- [ ] Set up nodemon for local development hot-reloading
-- [ ] Create build scripts for production bundling
+- [x] Initialize root `package.json` (single package, `src/client` + `src/server`; deviates from workspaces for readability)
+- [x] Configure TypeScript for both frontend and server
+- [x] Set up ESLint and Prettier for code consistency
+- [x] Create `.env.example` with required local environment variables
+- [x] Configure `tsconfig.json` for root, frontend, and server
+- [x] Set up nodemon for local development hot-reloading
+- [x] Create build scripts for production bundling
 
 ## 2. Backend Core (Node.js/Express)
-- [ ] Initialize Express server with CORS configuration for localhost
-- [ ] Implement robust error handling middleware
-- [ ] Create request logging middleware
-- [ ] Set up Multer for handling config file uploads
-- [ ] Implement local file system utilities (read/write/stream large files)
-- [ ] Create API response standardization wrapper
-- [ ] Set up process management for spawning Python scripts
+- [x] Initialize Express server with CORS configuration for localhost
+- [x] Implement robust error handling middleware
+- [x] Create request logging middleware
+- [x] Set up Multer for handling config file uploads
+- [x] Implement local file system utilities (read/write/stream large files)
+- [x] Create API response standardization wrapper
+- [x] Set up process management for spawning Python scripts
 
 ## 3. Configuration Management
 - [ ] Define JSON Schema for migration configuration
@@ -52,9 +52,9 @@ This checklist tracks the implementation of the local-first web application for 
 - [ ] Add error handling for Python process crashes
 
 ## 6. Frontend Core (React + TypeScript)
-- [ ] Initialize Vite + React + TypeScript project
+- [x] Initialize Vite + React + TypeScript project
 - [ ] Set up Tailwind CSS for styling
-- [ ] Create global state management (Zustand/Redux) for wizard state
+- [x] Create global state management (Zustand/Redux) for wizard state
 - [ ] Implement routing (React Router) for wizard steps
 - [ ] Create reusable UI components (Button, Input, Select, Card, Modal)
 - [ ] Create Layout component with sidebar/navigation
@@ -150,7 +150,7 @@ This checklist tracks the implementation of the local-first web application for 
 - [ ] Save load results/logs locally
 
 ## 18. Local Storage & File Management
-- [ ] Define standard directory structure for local data (`./data/orgs`, `./data/jobs`)
+- [x] Define standard directory structure for local data (`./data/orgs`, `./data/jobs`)
 - [ ] Implement cleanup utility for temporary files
 - [ ] Create job history tracking (JSON logs of past runs)
 - [ ] Ensure large file handling (streaming reads/writes)
@@ -164,8 +164,8 @@ This checklist tracks the implementation of the local-first web application for 
 - [ ] Verify memory usage during large file processing
 
 ## 20. Documentation & Deployment
-- [ ] Write `README.md` with setup instructions (Clone -> Install -> Run)
-- [ ] Document environment variables setup
+- [x] Write `README.md` with setup instructions (Clone -> Install -> Run)
+- [x] Document environment variables setup
 - [ ] Create troubleshooting guide for common OAuth/API issues
 - [ ] Add comments to Python scripts for maintenance
-- [ ] Prepare production build script
+- [x] Prepare production build script

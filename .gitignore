@@ -1,35 +1,50 @@
-```
-# Dependencies
-node_modules/
 
-# Build artifacts
+node_modules/
+# Build output
 dist/
 build/
-*.js
-*.js.map
-*.d.ts
-*.d.ts.map
+src/client/dist/
+src/server/dist/
 
-# Environment
+# TypeScript build info
+*.tsbuildinfo
+
+# Environment files (never commit secrets)
 .env
 .env.local
-*.env.*
-
-# Editors
-.vscode/
-.idea/
+.env.*.local
 
 # Logs
 *.log
+logs/
+data/logs/*
+
+# Local data (extracted files stay local, keep folder structure via .gitkeep)
+data/extracted/*
+data/temp/*
+!data/extracted/.gitkeep
+!data/temp/.gitkeep
+!data/configs/.gitkeep
+!data/logs/.gitkeep
 
 # OS generated
 .DS_Store
 Thumbs.db
+
+# Editors
+.vscode/
+.idea/
 
 # Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.Python
-```
+.venv/
+venv/
+
+# Test output
+coverage/
+playwright-report/
+test-results/
+node_modules
