@@ -88,6 +88,13 @@ describe('http routes', () => {
     expect(res.error.code).toBe('NOT_FOUND');
   });
 
+  it('reports available auth methods', async () => {
+    const res = await json(await fetch(`${base}/api/auth/methods`));
+    expect(res.success).toBe(true);
+    // No connected app in test env → legacy SOAP path advertised honestly.
+    expect(res.data).toEqual({ oauthConfigured: false, passwordFlow: 'soap-legacy' });
+  });
+
   it('refuses OAuth URLs when no connected app is configured', async () => {
     // No SF_CLIENT_ID in test env, so this must fail fast with setup help
     // instead of handing Salesforce a blank client_id (invalid_client_id).

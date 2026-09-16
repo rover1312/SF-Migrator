@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useOAuthLogin } from '../hooks/useOAuth';
 import { useMigrationStore } from '../store/migrationStore';
 import { api } from '../utils/api-client';
@@ -8,6 +8,7 @@ import { Badge, Button, Card, Notice, TextInput } from './ui';
 export default function Step2SourceOrg() {
   const { sourceOrg, setSourceOrg, setStep } = useMigrationStore();
   const oauth = useOAuthLogin();
+  const [passwordFlow, setPasswordFlow] = useState<'oauth' | 'soap-legacy' | null>(null);
   const [nickname, setNickname] = useState(sourceOrg?.nickname ?? 'prod');
   const [loginUrl, setLoginUrl] = useState(sourceOrg?.loginUrl ?? 'https://login.salesforce.com');
   const [username, setUsername] = useState('');
@@ -15,6 +16,13 @@ export default function Step2SourceOrg() {
   const [securityToken, setSecurityToken] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    api
+      .get<{ passwordFlow: 'oauth' | 'soap-legacy' }>('/api/auth/methods')
+      .then((m) => setPasswordFlow(m.passwordFlow))
+      .catch(() => setPasswordFlow(null));
+  }, []);
 
   async function connect(): Promise<void> {
     setError(null);
@@ -65,6 +73,17 @@ export default function Step2SourceOrg() {
         </Card>
       ) : (
         <Card title="Connect the org to extract from" tint="mint">
+          {passwordFlow === 'oauth' && (
+            <Notice kind="ok">
+              Password login uses the OAuth flow — safe beyond Summer &apos;27.
+            </Notice>
+          )}
+          {passwordFlow === 'soap-legacy' && (
+            <Notice kind="warn">
+              No connected app configured: password login uses legacy SOAP, which retires Summer
+              &apos;27. Add one to switch to OAuth (see Setup guide).
+            </Notice>
+          )}
           <TextInput label="Nickname" value={nickname} onChange={setNickname} />
           <TextInput label="Login URL" value={loginUrl} onChange={setLoginUrl} />
           <TextInput label="Username" value={username} onChange={setUsername} />

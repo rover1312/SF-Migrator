@@ -153,6 +153,14 @@ router.get('/callback', async (req, res) => {
   }
 });
 
+// GET /api/auth/methods — which login paths are available and safe.
+// passwordFlow is 'oauth' when a connected app exists (Summer '27-safe) and
+// 'soap-legacy' otherwise (works until Salesforce retires SOAP login()).
+router.get('/methods', (_req, res) => {
+  const oauthConfigured = isOAuthConfigured();
+  ok(res, { oauthConfigured, passwordFlow: oauthConfigured ? 'oauth' : 'soap-legacy' });
+});
+
 // GET /api/auth/orgs — list locally registered orgs.
 router.get('/orgs', async (_req, res) => {
   const orgs = (await orgStore.loadAll()).map((o) => ({ ...o, accessToken: undefined }));

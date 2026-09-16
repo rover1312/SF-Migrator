@@ -46,6 +46,17 @@ export function isOAuthConfigured(): boolean {
   );
 }
 
+export interface CredentialArgs {
+  loginUrl: string;
+  username: string;
+  password: string;
+  securityToken?: string;
+}
+
+export interface PasswordOAuthDeps {
+  oauth2?: Pick<OAuth2, 'authenticate'>;
+}
+
 /**
  * Salesforce access layer (jsforce). Connections live in memory per orgId;
  * tokens persist via OrgStore. All network calls retry transient failures.
@@ -66,13 +77,51 @@ export class SalesforceService {
 
   async connectWithCredentials(
     orgId: string,
-    args: { loginUrl: string; username: string; password: string; securityToken?: string },
+    args: CredentialArgs,
+    deps: PasswordOAuthDeps = {},
   ): Promise<Connection> {
+    // Prefer the OAuth password flow (REST token endpoint): the SOAP login()
+    // call it replaces retires in Summer '27. Without a configured connected
+    // app we fall back to legacy SOAP login, which works until then.
+    if (isOAuthConfigured()) {
+      logger.info(`Connecting org ${orgId} via OAuth password flow`);
+      return this.connectWithPasswordOAuth(orgId, args, deps);
+    }
+    logger.warn(
+      "No connected app configured: using legacy SOAP login(), which Salesforce retires in Summer '27. " +
+        'Set SF_CLIENT_ID/SF_CLIENT_SECRET to switch to OAuth.',
+    );
+    return this.loginViaSoap(orgId, args);
+  }
+
+  /** Legacy SOAP login(). Works until Salesforce retires login() in Summer '27. */
+  async loginViaSoap(orgId: string, args: CredentialArgs): Promise<Connection> {
     const conn = new Connection({ loginUrl: args.loginUrl });
     await withRetry(() => conn.login(args.username, args.password + (args.securityToken ?? '')));
     this.connections.set(orgId, conn);
     logger.info(`Connected org ${orgId}`);
     return conn;
+  }
+
+  /**
+   * OAuth 2.0 Resource Owner Password Credentials flow (REST token endpoint,
+   * unaffected by the Summer '27 SOAP login() retirement). Needs the
+   * connected app from .env. Security-token rules match SOAP login.
+   */
+  async connectWithPasswordOAuth(
+    orgId: string,
+    args: CredentialArgs,
+    deps: PasswordOAuthDeps = {},
+  ): Promise<Connection> {
+    const oauth2 = deps.oauth2 ?? oauth2Client();
+    const result = await withRetry(() =>
+      oauth2.authenticate(args.username, args.password + (args.securityToken ?? '')),
+    );
+    return this.connectWithTokens(orgId, {
+      accessToken: result.access_token,
+      instanceUrl: result.instance_url,
+      refreshToken: result.refresh_token,
+    });
   }
 
   async connectWithTokens(

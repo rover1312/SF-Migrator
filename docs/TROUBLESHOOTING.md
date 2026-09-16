@@ -22,6 +22,12 @@
 - **Expired sessions** — access tokens expire. If a stored org has a refresh
   token, reconnect via OAuth; otherwise log in again (Step 2/3). Passwords
   are never stored locally, only OAuth tokens in `data/configs/orgs.json`.
+- **Summer '27 SOAP `login()` retirement** — Salesforce retires the SOAP
+  `login()` call in Summer '27. This app is ready: when a connected app is
+  configured, password login automatically uses the OAuth password flow
+  (REST token endpoint) instead. Without one, it falls back to legacy SOAP
+  and Step 2 shows a warning. Data operations (REST describe/query, Bulk
+  API 2.0) were never affected.
 
 ## Extraction & loading
 

@@ -10,7 +10,11 @@
 
 **Option A — Salesforce login popup (recommended).** Click
 **Connect with Salesforce**: a Salesforce login page opens, you sign in, and
-the popup closes itself with the org connected in the app. One-time setup:
+the popup closes itself with the org connected in the app. One-time setup
+(one connected app, created once in *any* org, works for *all* orgs —
+see note below):
+
+1. In Salesforce Setup, go to **App Manager → New Connected App**.
 
 1. In Salesforce Setup, go to **App Manager → New Connected App**.
 2. Name it (e.g. `SF-Migrator Local`), add a contact email.
@@ -25,6 +29,15 @@ the popup closes itself with the org connected in the app. One-time setup:
    `SF_REDIRECT_URI=http://localhost:3001/api/auth/callback`.
 7. If login is blocked by policy, set the connected app's **Permitted Users**
    to "All users may self-authorize" (or ask an admin to pre-authorize it).
+
+> **Why only once?** A connected app is global metadata: it lives in one org
+> (a free Developer Edition org works fine and keeps production clean) but
+> can log into *any* org. The first time you connect a new org, Salesforce
+> shows an "Allow access?" approval screen — approving auto-installs the app
+> there. That approval screen is exactly the Workbench experience, and it's
+> why Workbench never asks you to create anything. The only exception is an
+> org whose admin restricts OAuth to pre-approved apps; there, an admin must
+> allowlist it once.
 
 **Option B — username + password.** No Salesforce setup needed; enter
 credentials (+ security token if required) directly in Step 2/3. Passwords
