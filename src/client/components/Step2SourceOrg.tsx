@@ -1,11 +1,13 @@
 import { useState } from 'react';
+import { useOAuthLogin } from '../hooks/useOAuth';
 import { useMigrationStore } from '../store/migrationStore';
 import { api } from '../utils/api-client';
 import { Badge, Button, Card, Notice, TextInput } from './ui';
 
-/** Step 2 — connect the source org (username/password or OAuth tokens). */
+/** Step 2 — connect the source org (Salesforce login or username/password). */
 export default function Step2SourceOrg() {
   const { sourceOrg, setSourceOrg, setStep } = useMigrationStore();
+  const oauth = useOAuthLogin();
   const [nickname, setNickname] = useState(sourceOrg?.nickname ?? 'prod');
   const [loginUrl, setLoginUrl] = useState(sourceOrg?.loginUrl ?? 'https://login.salesforce.com');
   const [username, setUsername] = useState('');
@@ -36,22 +38,25 @@ export default function Step2SourceOrg() {
     setSourceOrg(null);
   }
 
-  async function oauthUrl(): Promise<void> {
-    const data = await api.get<{ url: string }>(
-      `/api/auth/oauth-url?loginUrl=${encodeURIComponent(loginUrl)}`,
-    );
-    window.open(data.url, '_blank', 'noopener');
+  async function oauthLogin(): Promise<void> {
+    setError(null);
+    try {
+      const result = await oauth.login(loginUrl, nickname);
+      setSourceOrg({ orgId: result.orgId, nickname, loginUrl, connected: true });
+    } catch (err) {
+      setError((err as Error).message);
+    }
   }
 
   return (
     <section>
-      <h2>2. Source org</h2>
+      <h2 className="ui-h2">2. Source org</h2>
       {sourceOrg?.connected ? (
         <Card title="Connected">
           <p>
             <Badge color="green">connected</Badge> {sourceOrg.nickname} — {sourceOrg.loginUrl}
           </p>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="ui-btnrow">
             <Button onClick={() => void disconnect()}>Disconnect</Button>
             <Button primary onClick={() => setStep(3)}>
               Continue
@@ -59,7 +64,7 @@ export default function Step2SourceOrg() {
           </div>
         </Card>
       ) : (
-        <Card title="Connect the org to extract from">
+        <Card title="Connect the org to extract from" tint="mint">
           <TextInput label="Nickname" value={nickname} onChange={setNickname} />
           <TextInput label="Login URL" value={loginUrl} onChange={setLoginUrl} />
           <TextInput label="Username" value={username} onChange={setUsername} />
@@ -71,15 +76,17 @@ export default function Step2SourceOrg() {
             type="password"
           />
           {error && <Notice kind="error">{error}</Notice>}
-          <div style={{ display: 'flex', gap: 8 }}>
-            <Button
-              primary
-              onClick={() => void connect()}
-              disabled={busy || !username || !password}
-            >
-              {busy ? 'Connecting…' : 'Connect'}
+          {oauth.error && <Notice kind="error">{oauth.error}</Notice>}
+          <div className="ui-btnrow">
+            <Button primary onClick={() => void oauthLogin()} disabled={oauth.busy || !nickname}>
+              {oauth.busy ? 'Waiting for Salesforce…' : 'Connect with Salesforce'}
             </Button>
-            <Button onClick={() => void oauthUrl()}>Get OAuth login URL</Button>
+          </div>
+          <p className="ui-muted">Or connect with a username and password:</p>
+          <div className="ui-btnrow">
+            <Button onClick={() => void connect()} disabled={busy || !username || !password}>
+              {busy ? 'Connecting…' : 'Connect with password'}
+            </Button>
           </div>
         </Card>
       )}

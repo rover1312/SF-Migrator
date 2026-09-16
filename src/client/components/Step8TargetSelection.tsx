@@ -10,11 +10,12 @@ export default function Step8TargetSelection() {
 
   return (
     <section>
-      <h2>8. Targets for loading</h2>
-      <Card title="Which orgs receive data?">
+      <h2 className="ui-h2">8. Targets for loading</h2>
+      <Card title="Which orgs receive data?" tint="peach">
         {targetOrgs.map((org) => (
-          <label key={org.orgId} style={{ display: 'flex', gap: 8, padding: '4px 0' }}>
+          <label key={org.orgId} className="ui-row">
             <input
+              className="ui-toggle"
               type="checkbox"
               checked={loadTargets.includes(org.orgId)}
               onChange={() => toggleLoadTarget(org.orgId)}
@@ -25,10 +26,11 @@ export default function Step8TargetSelection() {
           </label>
         ))}
       </Card>
-      <Card title="Loading strategy">
-        <label style={{ display: 'block', marginBottom: 8 }}>
-          <span style={{ display: 'block', fontSize: 12, color: '#555' }}>Operation</span>
+      <Card title="Loading strategy" tint="mint">
+        <label className="ui-field">
+          <span>Operation</span>
           <select
+            className="ui-select"
             value={strategy.operation}
             onChange={(e) =>
               setStrategy({ operation: e.target.value as 'insert' | 'update' | 'upsert' })
@@ -53,8 +55,9 @@ export default function Step8TargetSelection() {
           value={strategy.batchSize}
           onChange={(v) => setStrategy({ batchSize: Number(v) || 200 })}
         />
-        <label style={{ display: 'flex', gap: 8 }}>
+        <label className="ui-row">
           <input
+            className="ui-toggle"
             type="checkbox"
             checked={strategy.stopOnError}
             onChange={(e) => setStrategy({ stopOnError: e.target.checked })}

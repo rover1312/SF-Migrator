@@ -23,18 +23,47 @@ function nextStep(step: WizardStep): WizardStep {
   return STEP_ORDER[Math.min(STEP_ORDER.length - 1, STEP_ORDER.indexOf(step) + 1)];
 }
 
+/** Console chassis: brass nameplate, LED preset stepper, transport nav. */
 export default function App() {
   const { step, setStep } = useMigrationStore();
   const onSummary = step === 'summary';
+  const position = onSummary ? 10 : STEP_ORDER.indexOf(step);
 
   return (
-    <main style={{ maxWidth: 960, margin: '0 auto', padding: 24 }}>
-      <h1>SF-Migrator</h1>
-      <p>
-        {onSummary
-          ? 'Review — local-first Salesforce migration.'
-          : `Step ${step} of 10 — local-first Salesforce migration.`}
-      </p>
+    <main className="ui-desk">
+      <header className="ui-header">
+        <div className="ui-plate">
+          <h1>SF-MIGRATOR</h1>
+        </div>
+        <p className="ui-sub">
+          {onSummary
+            ? 'Review — local-first migration'
+            : `Program ${step} of 10 — local-first migration`}
+        </p>
+        <div className="ui-stepper" role="navigation" aria-label="Wizard steps">
+          {STEP_ORDER.map((n, i) => (
+            <button
+              key={n}
+              className={`ui-pip${n === step ? ' lit' : ''}${i < position ? ' done' : ''}`}
+              onClick={() => setStep(n)}
+              title={`Step ${n}`}
+              aria-label={`Go to step ${n}`}
+              aria-current={n === step ? 'step' : undefined}
+            >
+              {n}
+            </button>
+          ))}
+          <button
+            className={`ui-pip${onSummary ? ' lit' : ''}`}
+            onClick={() => setStep('summary')}
+            title="Summary"
+            aria-label="Go to summary"
+            aria-current={onSummary ? 'step' : undefined}
+          >
+            ✓
+          </button>
+        </div>
+      </header>
 
       {step === 1 && <Step1ConfigMode />}
       {step === 2 && <Step2SourceOrg />}
@@ -48,13 +77,19 @@ export default function App() {
       {step === 10 && <Step10DataLoading />}
       {step === 'summary' && <ConfigSummaryScreen />}
 
-      <nav style={{ display: 'flex', gap: 8, marginTop: 24 }}>
-        <button disabled={step === 1} onClick={() => setStep(prevStep(step))}>
-          Back
+      <nav className="ui-nav">
+        <button className="ui-btn" disabled={step === 1} onClick={() => setStep(prevStep(step))}>
+          ◀ Back
         </button>
-        <button onClick={() => setStep('summary')}>Review summary</button>
-        <button disabled={onSummary || step === 10} onClick={() => setStep(nextStep(step))}>
-          Next
+        <button className="ui-btn" onClick={() => setStep('summary')}>
+          Review summary
+        </button>
+        <button
+          className="ui-btn ui-btn-primary"
+          disabled={onSummary || step === 10}
+          onClick={() => setStep(nextStep(step))}
+        >
+          Next ▶
         </button>
       </nav>
     </main>

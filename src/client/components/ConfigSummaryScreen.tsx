@@ -61,20 +61,20 @@ export default function ConfigSummaryScreen() {
 
   return (
     <section>
-      <h2>Summary</h2>
+      <h2 className="ui-h2">Summary</h2>
       {largeObjects && (
         <Notice kind="warn">No filters configured — extraction will pull full objects.</Notice>
       )}
       {error && <Notice kind="error">{error}</Notice>}
 
-      <Card title="Source org">
+      <Card title="Source org" tint="sky">
         <p>
           {sourceOrg.nickname} — {sourceOrg.loginUrl}
         </p>
         <Button onClick={() => setStep(2)}>Edit</Button>
       </Card>
 
-      <Card title={`Target orgs (${targetOrgs.length})`}>
+      <Card title={`Target orgs (${targetOrgs.length})`} tint="peach">
         {targetOrgs.map((o) => (
           <Badge key={o.orgId} color="gray">
             {o.nickname}
@@ -85,7 +85,10 @@ export default function ConfigSummaryScreen() {
         </div>
       </Card>
 
-      <Card title={`Objects & fields (${selectedObjects.length} objects, ${totalFields} fields)`}>
+      <Card
+        title={`Objects & fields (${selectedObjects.length} objects, ${totalFields} fields)`}
+        tint="mint"
+      >
         <ul>
           {selectedObjects.map((name) => (
             <li key={name}>
@@ -105,21 +108,21 @@ export default function ConfigSummaryScreen() {
             </li>
           ))}
         </ul>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className="ui-btnrow">
           <Button onClick={() => setStep(4)}>Edit objects</Button>
           <Button onClick={() => setStep(5)}>Edit fields</Button>
           <Button onClick={() => setStep(6)}>Edit filters</Button>
         </div>
       </Card>
 
-      <Card title="Settings">
+      <Card title="Settings" tint="rose">
         <p>
           Extraction: {extraction.format}, batch {extraction.batchSize} · Loading:{' '}
           {strategy.operation}
           {strategy.operation === 'upsert' && ` via ${strategy.externalIdField}`} ·{' '}
           {strategy.stopOnError ? 'stop on error' : 'continue on error'}
         </p>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className="ui-btnrow">
           <Button onClick={() => setStep(7)}>Edit</Button>
           <Button onClick={() => void exportConfig('json')}>Export JSON</Button>
           <Button onClick={() => void exportConfig('yaml')}>Export YAML</Button>

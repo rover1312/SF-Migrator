@@ -40,11 +40,12 @@ export default function Step7Extraction() {
 
   return (
     <section>
-      <h2>7. Extraction</h2>
-      <Card title="Settings">
-        <label style={{ display: 'block', marginBottom: 8 }}>
-          <span style={{ display: 'block', fontSize: 12, color: '#555' }}>Output format</span>
+      <h2 className="ui-h2">7. Extraction</h2>
+      <Card title="Settings" tint="sky">
+        <label className="ui-field">
+          <span>Output format</span>
           <select
+            className="ui-select"
             value={extraction.format}
             onChange={(e) => setExtraction({ format: e.target.value as 'csv' | 'json' | 'both' })}
           >
@@ -71,7 +72,7 @@ export default function Step7Extraction() {
 
       {job && (
         <Card title={`Job ${job.id}`}>
-          <p>
+          <p role="status">
             Status:{' '}
             <Badge
               color={
@@ -92,7 +93,7 @@ export default function Step7Extraction() {
           </p>
           {job.error && <Notice kind="error">{job.error}</Notice>}
           {!done && (
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div className="ui-btnrow">
               {job.status === 'running' && (
                 <Button onClick={() => void control('pause')}>Pause</Button>
               )}
@@ -103,7 +104,7 @@ export default function Step7Extraction() {
             </div>
           )}
           {job.status === 'completed' && (
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div className="ui-btnrow">
               <a href={`/api/extract/files/${job.id}`} target="_blank" rel="noreferrer">
                 List extracted files
               </a>

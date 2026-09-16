@@ -80,7 +80,7 @@ export default function Step10DataLoading() {
 
   return (
     <section>
-      <h2>10. Data loading</h2>
+      <h2 className="ui-h2">10. Data loading</h2>
       {error && <Notice kind="error">{error}</Notice>}
       {targets.map((org) => {
         const job = jobByTarget[org.orgId] ? jobs[jobByTarget[org.orgId]] : undefined;
@@ -96,7 +96,7 @@ export default function Step10DataLoading() {
               </Button>
             ) : (
               <div>
-                <p>
+                <p role="status">
                   Status:{' '}
                   <Badge
                     color={
@@ -125,7 +125,7 @@ export default function Step10DataLoading() {
                 </p>
                 {job.error && <Notice kind="error">{job.error}</Notice>}
                 {job.status === 'running' && (
-                  <div style={{ display: 'flex', gap: 8 }}>
+                  <div className="ui-btnrow">
                     <Button onClick={() => void control(job.id, 'pause')}>Pause</Button>
                     <Button onClick={() => void control(job.id, 'cancel')}>Cancel</Button>
                   </div>
@@ -154,7 +154,7 @@ export default function Step10DataLoading() {
           </Card>
         );
       })}
-      <p style={{ color: '#555' }}>
+      <p className="ui-muted">
         Loads run in dependency order with lookup ID translation. Reports persist under{' '}
         <code>data/logs/</code>.
       </p>

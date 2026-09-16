@@ -81,8 +81,8 @@ export default function Step1ConfigMode() {
 
   return (
     <section>
-      <h2>1. Configuration mode</h2>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+      <h2 className="ui-h2">1. Configuration mode</h2>
+      <div className="ui-btnrow">
         <Button primary={mode === 'new'} onClick={() => setMode('new')}>
           Start new migration
         </Button>
@@ -92,7 +92,7 @@ export default function Step1ConfigMode() {
       </div>
 
       {mode === 'new' && (
-        <Card title="New migration">
+        <Card title="New migration" tint="sky">
           <p>Configure each step of the wizard. You can export the result later.</p>
           <Button primary onClick={() => setStep(2)}>
             Continue to source org
@@ -101,8 +101,10 @@ export default function Step1ConfigMode() {
       )}
 
       {mode === 'import' && (
-        <Card title="Import configuration">
+        <Card title="Import configuration" tint="peach">
           <input
+            className="ui-file"
+            aria-label="Upload configuration file"
             type="file"
             accept=".json,.yaml,.yml"
             onChange={(e) => {

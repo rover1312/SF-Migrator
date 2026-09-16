@@ -46,7 +46,7 @@ export default function Step5FieldSelection() {
 
   return (
     <section>
-      <h2>5. Fields & permissions</h2>
+      <h2 className="ui-h2">5. Fields & permissions</h2>
       <p>
         <Badge color="green">C creatable</Badge> <Badge color="red">not creatable</Badge>{' '}
         <Badge color="green">U updateable</Badge> <Badge color="red">not updateable</Badge>
@@ -60,7 +60,7 @@ export default function Step5FieldSelection() {
             key={name}
             title={`${objectLabels[name] ?? name} (${selected.length}/${meta.length})`}
           >
-            <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+            <div className="ui-btnrow">
               <Button
                 onClick={() =>
                   setSelectedFields(
@@ -74,25 +74,24 @@ export default function Step5FieldSelection() {
               <Button onClick={() => setSelectedFields(name, [])}>Select none</Button>
             </div>
             {meta.map((f) => (
-              <div
-                key={f.name}
-                style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '2px 0' }}
-              >
+              <label key={f.name} className="ui-row">
                 <input
+                  className="ui-toggle"
                   type="checkbox"
                   checked={selected.includes(f.name)}
                   onChange={() => toggleField(name, f.name)}
                 />
                 <code>{f.name}</code>
-                <span style={{ color: '#555' }}>{f.label}</span>
+                <span className="ui-muted">{f.label}</span>
                 <Badge color={f.creatable ? 'green' : 'red'}>C</Badge>
                 <Badge color={f.updateable ? 'green' : 'red'}>U</Badge>
                 {!f.creatable && !f.updateable && <Badge color="gray">read-only</Badge>}
                 {(f.type === 'reference' || f.name.endsWith('Id')) && f.name !== 'Id' && (
                   <select
+                    className="ui-select"
+                    aria-label={`Parent object for ${name}.${f.name}`}
                     value={lookups[name]?.[f.name] ?? ''}
                     onChange={(e) => setLookup(name, f.name, e.target.value || null)}
-                    title="Parent object for ID translation"
                   >
                     <option value="">no lookup mapping</option>
                     {selectedObjects
@@ -104,7 +103,7 @@ export default function Step5FieldSelection() {
                       ))}
                   </select>
                 )}
-              </div>
+              </label>
             ))}
           </Card>
         );

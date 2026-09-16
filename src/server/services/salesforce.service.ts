@@ -29,6 +29,23 @@ function oauth2Client(): OAuth2 {
   });
 }
 
+export interface OAuthTokens {
+  accessToken: string;
+  instanceUrl: string;
+  refreshToken?: string;
+  sfOrgId?: string;
+  sfUserId?: string;
+}
+
+/** True when a Salesforce connected app is configured for the OAuth flow. */
+export function isOAuthConfigured(): boolean {
+  return (
+    config.salesforce.clientId !== '' &&
+    config.salesforce.clientSecret !== '' &&
+    config.salesforce.redirectUri !== ''
+  );
+}
+
 /**
  * Salesforce access layer (jsforce). Connections live in memory per orgId;
  * tokens persist via OrgStore. All network calls retry transient failures.
@@ -76,6 +93,12 @@ export class SalesforceService {
 
   /** Build the Salesforce login URL that starts the OAuth web-server flow. */
   getAuthorizationUrl(loginUrl: string, state: string): string {
+    if (!isOAuthConfigured()) {
+      throw new Error(
+        'OAuth is not configured. Create a Salesforce connected app and set SF_CLIENT_ID, ' +
+          'SF_CLIENT_SECRET, and SF_REDIRECT_URI in .env, then restart the server.',
+      );
+    }
     const oauth2 = new OAuth2({
       clientId: config.salesforce.clientId,
       clientSecret: config.salesforce.clientSecret,
@@ -83,6 +106,25 @@ export class SalesforceService {
       loginUrl,
     });
     return oauth2.getAuthorizationUrl({ scope: 'api refresh_token', state });
+  }
+
+  /**
+   * Exchange an authorization code (OAuth callback) for tokens.
+   * The identity URL encodes the org and user IDs (.../id/<orgId>/<userId>).
+   */
+  async exchangeCode(code: string): Promise<OAuthTokens> {
+    if (!isOAuthConfigured()) {
+      throw new Error('OAuth is not configured (SF_CLIENT_ID / SF_CLIENT_SECRET missing).');
+    }
+    const result = await withRetry(() => oauth2Client().requestToken(code));
+    const [, sfOrgId, sfUserId] = result.id.split('/id/')[1]?.split('/') ?? [];
+    return {
+      accessToken: result.access_token,
+      instanceUrl: result.instance_url,
+      refreshToken: result.refresh_token,
+      sfOrgId,
+      sfUserId,
+    };
   }
 
   /** Refresh an expired access token. Returns fresh tokens to persist. */

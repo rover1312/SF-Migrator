@@ -12,7 +12,7 @@ Python via child process (data processing) | Local file system (storage)
 ```bash
 npm run typecheck && npm run typecheck:client   # server + client tsc: clean
 npm run lint                                    # ESLint: 0 errors
-npm test                                        # Jest: 14 suites / 45 tests pass
+npm test                                        # Jest: 16 suites / 60+ tests pass
 npm run build                                   # server tsc + vite build pass
 npm run dev                                     # UI :3000 + API :3001
 ```
@@ -138,12 +138,16 @@ npm run dev                                     # UI :3000 + API :3001
   (health, export → multipart re-import, invalid-config details, 404s).
 - [x] Scale — 20k-row CSV round-trip correctness (streaming design keeps
   memory flat: paged queries, chunked batches, file-backed payloads).
+- [x] UX benchmark — contrast 14/14 (WCAG 1.4.3), axe-core 0 violations on
+  all 11 screens, focus-visible rings, 34px+ targets, reduced-motion
+  support, ARIA roles/live regions. Report: `docs/UX_BENCHMARK.md`.
 
 ## 9. Docs — done
 
 - [x] `README.md` (setup, tree, scripts, Python, wizard flow).
 - [x] `docs/` — `SETUP.md`, full `API_SPECIFICATION.md`, `USER_GUIDE.md`,
-  `TROUBLESHOOTING.md` (OAuth/API pitfalls), `legacy/PROJECT_GUIDE.md`.
+  `TROUBLESHOOTING.md` (OAuth/API pitfalls), `UX_BENCHMARK.md` (audit +
+  scorecards), `legacy/PROJECT_GUIDE.md`.
 
 ## 10. Conventions (unchanged)
 

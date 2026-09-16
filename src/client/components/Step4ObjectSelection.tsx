@@ -46,7 +46,7 @@ export default function Step4ObjectSelection() {
 
   return (
     <section>
-      <h2>4. Objects</h2>
+      <h2 className="ui-h2">4. Objects</h2>
       {loading && <Notice kind="info">Loading objects…</Notice>}
       {error && <Notice kind="error">{error}</Notice>}
       <TextInput
@@ -60,10 +60,11 @@ export default function Step4ObjectSelection() {
         order)
       </p>
       <Card>
-        <div style={{ maxHeight: 400, overflowY: 'auto' }}>
+        <div className="ui-scroll">
           {filtered.map((r) => (
-            <label key={r.name} style={{ display: 'flex', gap: 8, padding: '4px 0' }}>
+            <label key={r.name} className="ui-row">
               <input
+                className="ui-toggle"
                 type="checkbox"
                 checked={selectedObjects.includes(r.name)}
                 onChange={() => toggle(r.name, r.label)}

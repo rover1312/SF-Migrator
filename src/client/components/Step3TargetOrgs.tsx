@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useOAuthLogin } from '../hooks/useOAuth';
 import { useMigrationStore } from '../store/migrationStore';
 import { api } from '../utils/api-client';
 import { Badge, Button, Card, Notice, TextInput } from './ui';
@@ -6,6 +7,7 @@ import { Badge, Button, Card, Notice, TextInput } from './ui';
 /** Step 3 — register one or more target orgs (must differ from the source). */
 export default function Step3TargetOrgs() {
   const { sourceOrg, targetOrgs, addTargetOrg, removeTargetOrg, setStep } = useMigrationStore();
+  const oauth = useOAuthLogin();
   const [nickname, setNickname] = useState('');
   const [loginUrl, setLoginUrl] = useState('https://test.salesforce.com');
   const [username, setUsername] = useState('');
@@ -13,6 +15,26 @@ export default function Step3TargetOrgs() {
   const [securityToken, setSecurityToken] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  async function nicknameTaken(name: string): Promise<boolean> {
+    if (sourceOrg && name === sourceOrg.nickname) return true;
+    return targetOrgs.some((o) => o.nickname === name);
+  }
+
+  async function oauthAdd(): Promise<void> {
+    setError(null);
+    if (await nicknameTaken(nickname)) {
+      setError('Target nickname must be unique and differ from the source org nickname.');
+      return;
+    }
+    try {
+      const result = await oauth.login(loginUrl, nickname);
+      addTargetOrg({ orgId: result.orgId, nickname, loginUrl, connected: true });
+      setNickname('');
+    } catch {
+      // Error is already surfaced via oauth.error.
+    }
+  }
 
   async function add(): Promise<void> {
     setError(null);
@@ -48,7 +70,7 @@ export default function Step3TargetOrgs() {
 
   return (
     <section>
-      <h2>3. Target orgs</h2>
+      <h2 className="ui-h2">3. Target orgs</h2>
       {targetOrgs.map((org) => (
         <Card key={org.orgId} title={org.nickname}>
           <p>
@@ -58,7 +80,7 @@ export default function Step3TargetOrgs() {
         </Card>
       ))}
       {targetOrgs.length < 10 && (
-        <Card title="Add target org">
+        <Card title="Add target org" tint="rose">
           <TextInput label="Nickname (unique)" value={nickname} onChange={setNickname} />
           <TextInput label="Login URL" value={loginUrl} onChange={setLoginUrl} />
           <TextInput label="Username" value={username} onChange={setUsername} />
@@ -70,11 +92,14 @@ export default function Step3TargetOrgs() {
             type="password"
           />
           {error && <Notice kind="error">{error}</Notice>}
-          <Button
-            primary
-            onClick={() => void add()}
-            disabled={busy || !nickname || !username || !password}
-          >
+          {oauth.error && <Notice kind="error">{oauth.error}</Notice>}
+          <div className="ui-btnrow">
+            <Button primary onClick={() => void oauthAdd()} disabled={oauth.busy || !nickname}>
+              {oauth.busy ? 'Waiting for Salesforce…' : 'Connect with Salesforce'}
+            </Button>
+          </div>
+          <p className="ui-muted">Or add with a username and password:</p>
+          <Button onClick={() => void add()} disabled={busy || !nickname || !username || !password}>
             {busy ? 'Adding…' : 'Add target org'}
           </Button>
         </Card>

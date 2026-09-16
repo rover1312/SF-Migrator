@@ -65,7 +65,7 @@ export default function Step9PermissionValidation() {
 
   return (
     <section>
-      <h2>9. Permission validation</h2>
+      <h2 className="ui-h2">9. Permission validation</h2>
       {error && <Notice kind="error">{error}</Notice>}
       {targets.map((org) => {
         const report = reports[org.orgId];
@@ -87,7 +87,7 @@ export default function Step9PermissionValidation() {
                     <Badge color="red">blocked</Badge>
                   )}
                 </p>
-                <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+                <div className="ui-scroll" style={{ maxHeight: 300 }}>
                   {report.checks
                     .filter((c) => c.status !== 'pass')
                     .map((c, i) => (

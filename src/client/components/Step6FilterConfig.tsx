@@ -22,7 +22,7 @@ export default function Step6FilterConfig() {
 
   return (
     <section>
-      <h2>6. Filters</h2>
+      <h2 className="ui-h2">6. Filters</h2>
       {selectedObjects.map((name) => {
         const rows = filters
           .map((f, i) => ({ ...f, index: i }))
@@ -31,8 +31,10 @@ export default function Step6FilterConfig() {
         return (
           <Card key={name} title={objectLabels[name] ?? name}>
             {rows.map((row) => (
-              <div key={row.index} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+              <div key={row.index} className="ui-filterrow">
                 <select
+                  className="ui-select"
+                  aria-label={`Filter field for ${name}`}
                   value={row.field}
                   onChange={(e) => updateFilter(row.index, { field: e.target.value })}
                 >
@@ -44,6 +46,8 @@ export default function Step6FilterConfig() {
                   ))}
                 </select>
                 <select
+                  className="ui-select"
+                  aria-label={`Filter operator for ${name}`}
                   value={row.operator}
                   onChange={(e) => updateFilter(row.index, { operator: e.target.value })}
                 >
@@ -54,18 +58,16 @@ export default function Step6FilterConfig() {
                   ))}
                 </select>
                 <input
+                  aria-label={`Filter value for ${name}`}
                   value={row.value}
                   placeholder="value (comma-separated for IN)"
                   onChange={(e) => updateFilter(row.index, { value: e.target.value })}
-                  style={{ flex: 1, padding: 6, borderRadius: 6, border: '1px solid #bbb' }}
                 />
                 <Button onClick={() => removeFilter(row.index)}>✕</Button>
               </div>
             ))}
             <Button onClick={() => addFilter(name)}>Add filter</Button>
-            <pre style={{ background: '#f6f8fa', padding: 8, borderRadius: 6, overflowX: 'auto' }}>
-              {previewSelect(name, fields, rows)}
-            </pre>
+            <pre className="ui-code">{previewSelect(name, fields, rows)}</pre>
           </Card>
         );
       })}

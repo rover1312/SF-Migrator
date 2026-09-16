@@ -13,6 +13,12 @@
 - **OAuth: `redirect_uri_mismatch`** — the connected app's callback URL must
   exactly match `SF_REDIRECT_URI` (default
   `http://localhost:3001/api/auth/callback`).
+- **OAuth: `invalid_client_id` / `OAUTH_NOT_CONFIGURED`** — no Salesforce
+  connected app is configured. In Salesforce Setup create a connected app
+  (enable OAuth, add the callback URL above, note the consumer key/secret),
+  set `SF_CLIENT_ID`, `SF_CLIENT_SECRET`, and `SF_REDIRECT_URI` in `.env`,
+  restart the server, and click Connect again. Username/password login keeps
+  working without any of this.
 - **Expired sessions** — access tokens expire. If a stored org has a refresh
   token, reconnect via OAuth; otherwise log in again (Step 2/3). Passwords
   are never stored locally, only OAuth tokens in `data/configs/orgs.json`.
